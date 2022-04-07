@@ -1,3 +1,13 @@
 # Client and helper scripts for healthcare inventory
 
-TODO
+## Install dependencies
+
+```
+sudo cpanm --installdeps .
+```
+
+## Run a script
+
+```
+perl -Ilib/ scripts/test.pl
+```
