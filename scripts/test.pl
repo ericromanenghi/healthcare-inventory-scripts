@@ -7,10 +7,10 @@ use warnings;
 
 use Data::Dumper qw( Dumper );
 
-use Inventory::Client;
+use Inventory::Utils::Client;
 
-my $client = Inventory::Client->new();
+my $client = Inventory::Utils::Client::get_authenticated_client();
 
-my $user = $client->login->get_authenticated_user();
+print "User : " . Dumper($client->authenticated_user());
 
-print "User : " . Dumper($user);
+print "Countries: " . Dumper($client->country->get_countries());

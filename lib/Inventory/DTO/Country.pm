@@ -2,6 +2,8 @@ package Inventory::DTO::Country;
 
 use Moose;
 
+with 'Inventory::Role::StrapiEntity';
+
 has 'country_code' => (
     is => 'ro',
     isa => 'Str',

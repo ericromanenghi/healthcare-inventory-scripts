@@ -9,10 +9,16 @@ use Inventory::DTO::AuthenticatedUser;
 sub get_authenticated_user {
     my ($self, $username, $password) = @_;
 
+    return unless $username && $password;
+
     my $user_data = $self->post({
-        identifier => $username ? $username : $self->environment->api_username,
-        password   => $password ? $password : $self->environment->api_password,
+        identifier => $username,
+        password   => $password,
     });
+
+    if (!$user_data) {
+        return;
+    }
 
     return Inventory::DTO::AuthenticatedUser->new(
         id       => $user_data->{user}->{id},

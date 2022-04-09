@@ -8,9 +8,13 @@ use HTTP::Request;
 use LWP::UserAgent;
 
 sub get {
-    my ($host, $uri, $params) = @_;
+    my ($host, $uri, $params, $jwt) = @_;
 
     my $request = _make_get_request($host, $uri, $params);
+
+    if ($jwt) {
+        $request->header('Authorization' => "Bearer $jwt");
+    }
 
     my $response = _call($request);
 
