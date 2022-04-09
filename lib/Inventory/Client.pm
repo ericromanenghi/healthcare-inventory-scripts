@@ -12,7 +12,9 @@ has 'login' => (
 );
 
 sub _build_login {
-    return Inventory::Client::Login->new();
+    return Inventory::Client::Login->new(
+        uri => '/auth/local',
+    );
 }
 
 no Moose;
