@@ -4,6 +4,7 @@ use Moose;
 
 use Inventory::Client::Login;
 use Inventory::Client::Country;
+use Inventory::Client::Hospital;
 
 has 'username' => (
     is  => 'ro',
@@ -29,6 +30,13 @@ has 'country' => (
     lazy    => 1
 );
 
+has 'hospital' => (
+    is      => 'ro',
+    isa     => 'Inventory::Client::Hospital',
+    builder => '_build_hospital',
+    lazy    => 1
+);
+
 has 'authenticated_user' => (
     is      => 'ro',
     isa     => 'Inventory::DTO::AuthenticatedUser',
@@ -47,6 +55,15 @@ sub _build_country {
     
     return Inventory::Client::Country->new(
         uri                => '/countries',
+        authenticated_user => $self->authenticated_user,
+    );
+}
+
+sub _build_hospital {
+    my ($self) = @_;
+    
+    return Inventory::Client::Hospital->new(
+        uri                => '/hospitals',
         authenticated_user => $self->authenticated_user,
     );
 }

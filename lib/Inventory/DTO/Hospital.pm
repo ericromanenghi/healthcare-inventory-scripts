@@ -2,6 +2,9 @@ package Inventory::DTO::Hospital;
 
 use Moose;
 use Moose::Util::TypeConstraints;
+use MooseX::UndefTolerant;
+
+with 'Inventory::Role::StrapiEntity';
 
 has 'name' => (
     is  => 'ro',

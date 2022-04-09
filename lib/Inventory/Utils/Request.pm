@@ -22,9 +22,13 @@ sub get {
 }
 
 sub post {
-    my ($host, $uri, $params) = @_;
+    my ($host, $uri, $params, $jwt) = @_;
 
     my $request = _make_post_request($host, $uri, $params);
+
+    if ($jwt) {
+        $request->header('Authorization' => "Bearer $jwt");
+    }
 
     my $response = _call($request);
 

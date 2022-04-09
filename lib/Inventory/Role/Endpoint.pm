@@ -73,12 +73,18 @@ sub get {
 sub post {
     my ($self, $args) = @_;
 
+    my $jwt;
+    if ($self->authenticated_user) {
+        $jwt = $self->authenticated_user->jwt();
+    }
+
     my $response;
     eval {
         $response = Inventory::Utils::Request::post(
             $self->environment->api_url,
             $self->uri,
-            $args
+            $args,
+            $jwt
         );
     } or do {
         my $error = $@;
@@ -86,7 +92,7 @@ sub post {
     };
 
     if ($response->code() != 200) {
-        warn "API called failed with status " . $response->code();
+        warn "API call failed with status " . $response->code();
     }
 
     if (!defined $response || $response->code() != 200) {
