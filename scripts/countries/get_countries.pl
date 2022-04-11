@@ -11,8 +11,8 @@ use Inventory::Utils::Client;
 
 my $client = Inventory::Utils::Client::get_authenticated_client();
 
-my $countries = $client->country->get_countries({
-    "pagination[limit]" => 100
+my $countries = $client->country->get_all({
+    "pagination[limit]" => 10
 });
 
 print Dumper($countries);

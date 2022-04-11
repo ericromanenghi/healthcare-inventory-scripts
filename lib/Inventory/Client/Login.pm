@@ -11,7 +11,7 @@ sub get_authenticated_user {
 
     return unless $username && $password;
 
-    my $user_data = $self->post({
+    my $user_data = $self->_post({
         identifier => $username,
         password   => $password,
     });

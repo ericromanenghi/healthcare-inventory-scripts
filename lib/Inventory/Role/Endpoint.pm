@@ -28,8 +28,71 @@ sub _fetch_environment {
     return Inventory::Environment->new();
 }
 
+sub get_all {
+    my ($self, $args) = @_;
+
+    my $response = $self->_get($args);
+
+    return unless $response;
+
+    return $self->_render_response_plural($response);
+}
+
+sub delete {
+    my ($self, $id) = @_;
+
+    my $response = $self->_delete({
+        id => $id
+    });
+
+    return $response;
+}
+
+sub create {
+    my ($self, $dto) = @_;
+
+    my $data = $self->_from_dto_to_data($dto);
+
+    my $response = $self->_post($data);
+
+    return unless $response;
+
+    return $self->_render_response($response);
+}
+
+sub _from_dto_to_data {
+    my ($self, $dto) = @_;
+    
+    my %data = %{ $dto }{(
+        @{ $self->required_fields },
+        @{ $self->optional_fields },
+    )};
+
+    return { data =>  \%data };
+}
+
+sub _render_response_plural {
+    my ($self, $response) = @_;
+
+    return [map {
+        $self->dto_class->new(
+            id => $_->{id},
+            %{$_->{attributes}}
+        );
+    } @{$response->{data}}];
+}
+
+sub _render_response {
+    my ($self, $response) = @_;
+
+    return $self->dto_class->new(
+        id => $response->{data}->{id},
+        %{$response->{data}->{attributes}}
+    );
+}
+
 # Returns a hashref with the decoded data or an undef in case of errors
-sub get {
+sub _get {
     my ($self, $args) = @_;
 
     my $jwt;
@@ -70,7 +133,7 @@ sub get {
 }
 
 # Returns a hashref with the decoded data or an undef in case of errors
-sub post {
+sub _post {
     my ($self, $args) = @_;
 
     my $jwt;
@@ -111,7 +174,7 @@ sub post {
 }
 
 # Returns a hashref with the decoded data or an undef in case of errors
-sub delete {
+sub _delete {
     my ($self, $args) = @_;
 
     my $jwt;

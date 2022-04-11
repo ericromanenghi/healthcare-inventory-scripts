@@ -6,53 +6,34 @@ with 'Inventory::Role::Endpoint';
 
 use Inventory::DTO::Country;
 
-sub get_countries {
-    my ($self, $args) = @_;
+has 'dto_class' => (
+    is      => 'ro',
+    isa     => 'Str',
+    builder => '_build_dto_class'
+);
 
-    my $countries_data = $self->get($args);
+has 'required_fields' => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    builder => '_build_required_fields'
+);
 
-    return unless $countries_data;
+has 'optional_fields' => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    builder => '_build_optional_fields'
+);
 
-    return [
-        map { 
-            _render_country_data($_)
-        } @{ $countries_data->{data} }
-    ];
+sub _build_dto_class {
+    return 'Inventory::DTO::Country';
 }
 
-sub create_country {
-    my ($self, $country_dto) = @_;
-
-    my $country_data = {
-        data => +{ %{$country_dto} }
-    };
-
-    my $response = $self->post($country_data);
-
-    return unless $response;
-
-    return _render_country_data($response->{data});
+sub _build_required_fields {
+    return [qw(name_en country_code)];
 }
 
-sub delete_country {
-    my ($self, $id) = @_;
-
-    my $response = $self->delete({
-        id => $id
-    });
-
-    return $response;
-}
-
-sub _render_country_data {
-    my ($country_data) = @_;
-    
-    my $attributes = $country_data->{attributes};
-    
-    return Inventory::DTO::Country->new(
-        id => $country_data->{id},
-        %{$attributes}
-    );
+sub _build_optional_fields {
+    return [];
 }
 
 no Moose;

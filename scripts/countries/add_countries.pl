@@ -25,7 +25,7 @@ my @country_dtos = map {
 my $client = Inventory::Utils::Client::get_authenticated_client();
 
 for my $country_dto (@country_dtos) {
-    my $response = $client->country->create_country($country_dto);
+    my $response = $client->country->create($country_dto);
     if ($response) {
         print $response->name_en . " inserted successfuly \n";
     }
