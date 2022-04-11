@@ -1,6 +1,7 @@
 package Inventory::Role::StrapiEntity;
 
 use Moose::Role;
+use MooseX::UndefTolerant;
 
 has 'id' => (
     is  => 'ro',

@@ -110,4 +110,45 @@ sub post {
     return $decoded_data;
 }
 
+# Returns a hashref with the decoded data or an undef in case of errors
+sub delete {
+    my ($self, $args) = @_;
+
+    my $jwt;
+    if ($self->authenticated_user) {
+        $jwt = $self->authenticated_user->jwt();
+    }
+
+    my $response;
+    eval {
+        $response = Inventory::Utils::Request::delete(
+            $self->environment->api_url,
+            $self->uri,
+            $args,
+            $jwt
+        );
+    } or do {
+        my $error = $@;
+        warn "Something went wrong: $error";
+    };
+
+    if ($response->code() != 200) {
+        warn "API call failed with status " . $response->code();
+    }
+
+    if (!defined $response || $response->code() != 200) {
+        return;
+    }
+
+    my $decoded_data;
+    eval {
+        $decoded_data = decode_json($response->decoded_content());
+    } or do {
+        my $error = $@;
+        warn "Couldn't decode response: $error";
+    };
+
+    return $decoded_data;
+}
+
 1;

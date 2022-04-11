@@ -35,6 +35,20 @@ sub post {
     return $response;
 }
 
+sub delete {
+    my ($host, $uri, $params, $jwt) = @_;
+
+    my $request = _make_delete_request($host, $uri, $params);
+
+    if ($jwt) {
+        $request->header('Authorization' => "Bearer $jwt");
+    }
+
+    my $response = _call($request);
+
+    return $response;
+}
+
 sub _call {
     my ($request) = @_;
 
@@ -58,6 +72,24 @@ sub _make_post_request {
     my $request = HTTP::Request->new('POST', $url);
     $request->header('Content-Type' => 'application/json');
     $request->content(encode_json($params));
+
+    return $request;
+}
+
+sub _make_delete_request {
+    my ($host, $uri, $params) = @_;
+
+    die "Id parameter is required for delete operations" unless defined $params->{id};
+
+    my $url = sprintf(
+        "%s%s/%s",
+        $host,
+        $uri,
+        $params->{id}
+    );
+
+    my $request = HTTP::Request->new('DELETE', $url);
+    $request->header('Content-Type' => 'application/json');
 
     return $request;
 }
