@@ -4,6 +4,7 @@ use Moose::Role;
 
 use Inventory::Environment;
 use Inventory::Utils::Request;
+use Inventory::Utils::Misc;
 use Inventory::DTO::AuthenticatedUser;
 
 use JSON;
@@ -30,6 +31,10 @@ sub _fetch_environment {
 
 sub get_all {
     my ($self, $args) = @_;
+
+    if (!defined $args->{populate} && $self->populate) {
+        $args->{populate} = '*';
+    }
 
     my $response = $self->_get($args);
 
@@ -74,20 +79,35 @@ sub _from_dto_to_data {
 sub _render_response_plural {
     my ($self, $response) = @_;
 
-    return [map {
-        $self->dto_class->new(
-            id => $_->{id},
-            %{$_->{attributes}}
-        );
-    } @{$response->{data}}];
+    return [map { $self->_render($_) } @{$response->{data}}];
 }
 
 sub _render_response {
     my ($self, $response) = @_;
 
+    return $self->_render($response->{data});
+}
+
+sub _render {
+    my ($self, $data) = @_;
+
+    my %attributes = %{$data->{attributes}};
+
+    my @empty_fields;
+    for my $relation (@{$self->relational_fields}) {
+        my $data = $attributes{$relation}->{data};
+
+        if (Inventory::Utils::Misc::is_empty($data))  {
+            push @empty_fields, $relation;
+            next;
+        }
+    }
+
+    map { delete %attributes{$_} } @empty_fields;
+
     return $self->dto_class->new(
-        id => $response->{data}->{id},
-        %{$response->{data}->{attributes}}
+        id => $data->{id},
+        %attributes
     );
 }
 
