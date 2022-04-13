@@ -26,7 +26,7 @@ has 'optional_fields' => (
 
 has 'relational_fields' => (
     is      => 'ro',
-    isa     => 'ArrayRef',
+    isa     => 'HashRef',
     builder => '_build_relational_fields'
 );
 
@@ -60,16 +60,16 @@ sub _build_optional_fields {
 }
 
 sub _build_relational_fields {
-    return [qw(
-        country
-        specialized_units
-        contact_people
-        spoken_languages
-        translated_languages
-        hospital_capabilities
-        availability
-        treatments
-    )];
+    return {
+        country               => 'Inventory::DTO::Country',
+        specialized_units     => 'Inventory::DTO::SpecializedUnit',
+        contact_people        => 'Inventory::DTO::HospitalContactPerson',
+        spoken_languages      => 'Inventory::DTO::Language',
+        translated_languages  => 'Inventory::DTO::Language',
+        hospital_capabilities => 'Inventory::DTO::HospitalCapability',
+        availability          => 'Inventory::DTO::Availability',
+        treatments            => 'Inventory::DTO::Treatment',
+    };
 }
 
 no Moose;

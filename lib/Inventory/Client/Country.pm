@@ -26,7 +26,7 @@ has 'optional_fields' => (
 
 has 'relational_fields' => (
     is      => 'ro',
-    isa     => 'ArrayRef',
+    isa     => 'HashRef',
     builder => '_build_relational_fields'
 );
 
@@ -49,7 +49,7 @@ sub _build_optional_fields {
 }
 
 sub _build_relational_fields {
-    return [];
+    return {};
 }
 
 no Moose;

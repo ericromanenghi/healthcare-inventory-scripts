@@ -88,27 +88,39 @@ sub _render_response {
     return $self->_render($response->{data});
 }
 
+# TODO: support nested relations
 sub _render {
     my ($self, $data) = @_;
 
-    my %attributes = %{$data->{attributes}};
+    my $attributes = $data->{attributes};
 
     my @empty_fields;
-    for my $relation (@{$self->relational_fields}) {
-        my $data = $attributes{$relation}->{data};
+    for my $relation (keys %{$self->relational_fields}) {
+        my $relation_data = $attributes->{$relation}->{data};
 
-        if (Inventory::Utils::Misc::is_empty($data))  {
+        if (Inventory::Utils::Misc::is_empty($relation_data))  {
             push @empty_fields, $relation;
             next;
         }
+
+        if (ref $relation_data eq 'ARRAY') {
+            $attributes->{$relation} = [map {
+                Inventory::Utils::Misc::create_dto_from_data(
+                    $self->relational_fields->{$relation},
+                    $_,
+                )
+            } @{$relation_data}];
+        } else {
+            $attributes->{$relation} = Inventory::Utils::Misc::create_dto_from_data(
+                $self->relational_fields->{$relation},
+                $relation_data,
+            );
+        }
     }
 
-    map { delete %attributes{$_} } @empty_fields;
+    map { delete $attributes->{$_} } @empty_fields;
 
-    return $self->dto_class->new(
-        id => $data->{id},
-        %attributes
-    );
+    return Inventory::Utils::Misc::create_dto_from_data($self->dto_class, $data);
 }
 
 # Returns a hashref with the decoded data or an undef in case of errors
