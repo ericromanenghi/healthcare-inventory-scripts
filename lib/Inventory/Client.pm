@@ -4,6 +4,7 @@ use Moose;
 
 use Inventory::Client::Login;
 use Inventory::Client::Country;
+use Inventory::Client::Language;
 use Inventory::Client::Hospital;
 
 has 'username' => (
@@ -27,6 +28,13 @@ has 'country' => (
     is      => 'ro',
     isa     => 'Inventory::Client::Country',
     builder => '_build_country',
+    lazy    => 1
+);
+
+has 'language' => (
+    is      => 'ro',
+    isa     => 'Inventory::Client::Language',
+    builder => '_build_language',
     lazy    => 1
 );
 
@@ -55,6 +63,15 @@ sub _build_country {
     
     return Inventory::Client::Country->new(
         uri                => '/countries',
+        authenticated_user => $self->authenticated_user,
+    );
+}
+
+sub _build_language {
+    my ($self) = @_;
+    
+    return Inventory::Client::Language->new(
+        uri                => '/languages',
         authenticated_user => $self->authenticated_user,
     );
 }

@@ -11,9 +11,9 @@ use Inventory::Utils::Client;
 
 my $client = Inventory::Utils::Client::get_authenticated_client();
 
-my $countries = $client->country->get_all({
+my $languages = $client->language->get_all({
     "pagination[page]"     => 1,
     "pagination[pageSize]" => 10
 });
 
-print Dumper($countries);
+print Dumper($languages);

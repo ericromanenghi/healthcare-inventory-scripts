@@ -43,6 +43,27 @@ sub get_all {
     return $self->_render_response_plural($response);
 }
 
+# Strapi has a maximun number of items you can retrieve
+# So here we paginate to get really all
+sub get_all_forced {
+    my ($self) = @_;
+
+    my @all;
+    my $page = 1;
+    while (1) {
+        my $batch = $self->get_all({
+            "pagination[page]"     => $page++,
+            "pagination[pageSize]" => 100
+        });
+
+        last unless $batch && @$batch > 0;
+
+        push @all, @$batch;
+    }
+
+    return \@all;
+}
+
 sub delete {
     my ($self, $id) = @_;
 
