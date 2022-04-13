@@ -2,6 +2,8 @@ package Inventory::DTO::Language;
 
 use Moose;
 
+with 'Inventory::Role::StrapiEntity';
+
 has 'code' => (
     is => 'ro',
     isa => 'Str',
