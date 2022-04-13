@@ -9,5 +9,5 @@ sudo cpanm --installdeps .
 ## Run a script
 
 ```
-perl -Ilib/ scripts/test.pl
+perl -Ilib/ scripts/countries/get_countries.pl
 ```
