@@ -24,6 +24,18 @@ has 'optional_fields' => (
     builder => '_build_optional_fields'
 );
 
+has 'relational_fields' => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    builder => '_build_relational_fields'
+);
+
+has 'populate' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => sub { 0 },
+);
+
 sub _build_dto_class {
     return 'Inventory::DTO::Country';
 }
@@ -34,6 +46,10 @@ sub _build_required_fields {
 
 sub _build_optional_fields {
     return [];
+}
+
+sub _build_relational_fields {
+    return {};
 }
 
 no Moose;

@@ -6,62 +6,70 @@ with 'Inventory::Role::Endpoint';
 
 use Inventory::DTO::Hospital;
 
-my @REQUIRED_FIELDS = qw(
-    name
-    address
+has 'dto_class' => (
+    is      => 'ro',
+    isa     => 'Str',
+    builder => '_build_dto_class'
 );
 
-my @OPTIONAL_FIELDS = qw(
-    google_maps_link
-    phone
-    admition_protocol
-    can_accommodate_family
-    comments
-    website
-    localization
+has 'required_fields' => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    builder => '_build_required_fields'
 );
 
-my @RELATIONAL_FIELDS = qw(
-    country
-    specialized_units
-    contact_people
-    spoken_languages
-    translated_languages
-    hospital_capabilities
-    availability
-    treatments
+has 'optional_fields' => (
+    is      => 'ro',
+    isa     => 'ArrayRef',
+    builder => '_build_optional_fields'
 );
 
-sub create_hospital {
-    my ($self, $hospital_dto) = @_;
+has 'relational_fields' => (
+    is      => 'ro',
+    isa     => 'HashRef',
+    builder => '_build_relational_fields'
+);
 
-    my $hospital_data = _from_dto_to_data($hospital_dto);
+has 'populate' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => sub { 1 },
+);
 
-    my $response = $self->post($hospital_data);
-
-    return unless $response;
-
-    return _render_response($response);
+sub _build_dto_class {
+    return 'Inventory::DTO::Hospital';
 }
 
-sub _from_dto_to_data {
-    my ($hospital_dto) = @_;
-    
-    my %hospital_data = %{ $hospital_dto }{(@REQUIRED_FIELDS, @OPTIONAL_FIELDS)};
-
-    return { data =>  \%hospital_data };
+sub _build_required_fields {
+    return [qw(
+        name
+        address
+    )];
 }
 
-sub _render_response {
-    my ($response) = @_;
-    
-    my $data = $response->{data};
-    my $attributes = $data->{attributes};
-    
-    return Inventory::DTO::Hospital->new(
-        id => $data->{id},
-        %{$attributes}
-    );
+sub _build_optional_fields {
+    return [qw(
+        google_maps_link
+        phone
+        admition_protocol
+        can_accommodate_family
+        comments
+        website
+        localization
+    )];
+}
+
+sub _build_relational_fields {
+    return {
+        country               => 'Inventory::DTO::Country',
+        specialized_units     => 'Inventory::DTO::SpecializedUnit',
+        contact_people        => 'Inventory::DTO::HospitalContactPerson',
+        spoken_languages      => 'Inventory::DTO::Language',
+        translated_languages  => 'Inventory::DTO::Language',
+        hospital_capabilities => 'Inventory::DTO::HospitalCapability',
+        availability          => 'Inventory::DTO::Availability',
+        treatments            => 'Inventory::DTO::Treatment',
+    };
 }
 
 no Moose;
