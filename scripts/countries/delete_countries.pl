@@ -11,9 +11,7 @@ use Inventory::Utils::Client;
 
 my $client = Inventory::Utils::Client::get_authenticated_client();
 
-my $countries = $client->country->get_all({
-    "pagination[pageSize]" => 300
-});
+my $countries = $client->country->get_all_forced();
 
 for my $country (@$countries) {
     print "Deleting country " . $country->{id} . "\n";
