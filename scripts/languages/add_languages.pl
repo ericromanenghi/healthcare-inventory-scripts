@@ -24,12 +24,10 @@ my @language_dtos = map {
 
 my $client = Inventory::Utils::Client::get_authenticated_client();
 
-my %stored_languages = map {
-    $_->{code} => 1
-} @{$client->language->get_all_forced()};
+my $stored_languages = $client->language->get_map_by_field('code');
 
 for my $language_dto (@language_dtos) {
-    if ($stored_languages{$language_dto->code}) {
+    if ($stored_languages->{$language_dto->code}) {
         print $language_dto->code . " already stored\n";
         next;
     }

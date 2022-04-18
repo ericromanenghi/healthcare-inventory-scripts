@@ -24,12 +24,10 @@ my @country_dtos = map {
 
 my $client = Inventory::Utils::Client::get_authenticated_client();
 
-my %stored_countries = map {
-    $_->{country_code} => 1
-} @{$client->country->get_all_forced()};
+my $stored_countries = $client->country->get_map_by_field('country_code');
 
 for my $country_dto (@country_dtos) {
-    if ($stored_countries{$country_dto->country_code}) {
+    if ($stored_countries->{$country_dto->country_code}) {
         print $country_dto->country_code . " already stored\n";
         next;
     }

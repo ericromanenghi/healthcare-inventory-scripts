@@ -64,6 +64,17 @@ sub get_all_forced {
     return \@all;
 }
 
+# Not validating that field exists or is a unique field
+sub get_map_by_field {
+    my ($self, $field) = @_;
+
+    my %entities_by_field = map {
+        $_->{$field} => $_
+    } @{$self->get_all_forced()};
+
+    return \%entities_by_field;
+}
+
 sub delete {
     my ($self, $id) = @_;
 
@@ -93,6 +104,24 @@ sub _from_dto_to_data {
         @{ $self->required_fields },
         @{ $self->optional_fields },
     )};
+
+    # For relations, we need to send ids instead of values
+    my $relational_fields = $self->relational_fields;
+    for my $relational_field (keys %$relational_fields) {
+        my $relation = $dto->{$relational_field};
+
+        next unless $relation;
+
+        if (ref $relation eq 'ARRAY') {
+            my @ids = map {
+                $_->id
+            } @$relation;
+            $data{$relational_field} = \@ids;
+            next; 
+        }
+
+        $data{$relational_field} = $relation->id;
+    }
 
     return { data =>  \%data };
 }
