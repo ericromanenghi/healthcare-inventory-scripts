@@ -9,8 +9,12 @@ use JSON;
 
 use Data::Dumper qw( Dumper );
 use File::Slurp;
+use Getopt::Long;
 
 use Inventory::Utils::Client;
+
+my $config_file = '.env.dev';
+GetOptions('config=s' => \$config_file);
 
 my $languages_json = read_file('datasets/languages.json');
 my $languages_raw = decode_json($languages_json);
@@ -22,7 +26,7 @@ my @language_dtos = map {
     )
 } @$languages_raw;
 
-my $client = Inventory::Utils::Client::get_authenticated_client();
+my $client = Inventory::Utils::Client::get_authenticated_client($config_file);
 
 my $stored_languages = $client->language->get_map_by_field('code');
 

@@ -9,8 +9,12 @@ use JSON;
 
 use Data::Dumper qw( Dumper );
 use File::Slurp;
+use Getopt::Long;
 
 use Inventory::Utils::Client;
+
+my $config_file = '.env.dev';
+GetOptions('config=s' => \$config_file);
 
 my $countries_json = read_file('datasets/countries.json');
 my $countries_raw = decode_json($countries_json);
@@ -22,7 +26,7 @@ my @country_dtos = map {
     )
 } @$countries_raw;
 
-my $client = Inventory::Utils::Client::get_authenticated_client();
+my $client = Inventory::Utils::Client::get_authenticated_client($config_file);
 
 my $stored_countries = $client->country->get_map_by_field('country_code');
 

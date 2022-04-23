@@ -7,13 +7,14 @@ use Inventory::Environment;
 use Inventory::Client;
 
 sub get_authenticated_client {
-    my ($username, $password) = @_;
+    my ($config_file) = @_;
 
-    my $environment = Inventory::Environment->new();
-    
+    my $environment = Inventory::Environment->new(
+        $config_file ? (config_file => $config_file) : ()
+    );
+
     return Inventory::Client->new(
-        username => $username // $environment->api_username,
-        password => $password // $environment->api_password,
+        environment => $environment
     );
 }
 

@@ -52,7 +52,10 @@ sub delete {
 sub _call {
     my ($request) = @_;
 
-    my $ua = LWP::UserAgent->new();
+    my $ua = LWP::UserAgent->new(
+        protocols_allowed => ['http', 'https'],
+        ssl_opts => { verify_hostname => 0 },
+    );
     my $response = $ua->request($request);
 
     return $response;

@@ -10,24 +10,19 @@ use Inventory::DTO::AuthenticatedUser;
 use JSON;
 
 has 'environment' => (
-    is => 'ro',
+    is  => 'ro',
     isa => 'Inventory::Environment',
-    builder => '_fetch_environment'
 );
 
 has 'uri' => (
-    is       => 'ro',
-    isa      => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 has 'authenticated_user' => (
-    is   => 'ro',
-    isa  => 'Inventory::DTO::AuthenticatedUser',
+    is  => 'ro',
+    isa => 'Inventory::DTO::AuthenticatedUser',
 );
-
-sub _fetch_environment {
-    return Inventory::Environment->new();
-}
 
 sub get_all {
     my ($self, $args) = @_;

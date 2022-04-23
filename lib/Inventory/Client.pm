@@ -7,14 +7,23 @@ use Inventory::Client::Country;
 use Inventory::Client::Language;
 use Inventory::Client::Hospital;
 
+has 'environment' => (
+    is => 'ro',
+    isa => 'Inventory::Environment',
+);
+
 has 'username' => (
-    is  => 'ro',
-    isa => 'Str',
+    is      => 'ro',
+    isa     => 'Str',
+    builder => '_build_username',
+    lazy    => 1
 );
 
 has 'password' => (
-    is  => 'ro',
-    isa => 'Str',
+    is      => 'ro',
+    isa     => 'Str',
+    builder => '_build_password',
+    lazy    => 1
 );
 
 has 'login' => (
@@ -52,9 +61,24 @@ has 'authenticated_user' => (
     builder => '_fetch_authenticated_user',
 );
 
+sub _build_username {
+    my ($self) = @_;
+
+    return $self->environment->api_username;
+}
+
+sub _build_password {
+    my ($self) = @_;
+
+    return $self->environment->api_password;
+}
+
 sub _build_login {
+    my ($self) = @_;
+
     return Inventory::Client::Login->new(
-        uri => '/auth/local',
+        uri         => '/auth/local',
+        environment => $self->environment,
     );
 }
 
@@ -64,6 +88,7 @@ sub _build_country {
     return Inventory::Client::Country->new(
         uri                => '/countries',
         authenticated_user => $self->authenticated_user,
+        environment        => $self->environment,
     );
 }
 
@@ -73,6 +98,7 @@ sub _build_language {
     return Inventory::Client::Language->new(
         uri                => '/languages',
         authenticated_user => $self->authenticated_user,
+        environment        => $self->environment,
     );
 }
 
@@ -82,6 +108,7 @@ sub _build_hospital {
     return Inventory::Client::Hospital->new(
         uri                => '/hospitals',
         authenticated_user => $self->authenticated_user,
+        environment        => $self->environment,
     );
 }
 

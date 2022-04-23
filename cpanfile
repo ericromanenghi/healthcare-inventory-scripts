@@ -5,3 +5,4 @@ requires 'JSON';
 requires 'Data::Dumper';
 requires 'File::Slurp';
 requires 'Module::Load';
+requires 'Getopt::Long';

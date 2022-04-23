@@ -31,8 +31,15 @@ has 'api_password' => (
     lazy    => 1,
 );
 
+has 'config_file' => (
+    is      => 'ro',
+    isa     => 'Str',
+    default => '.env.dev',
+);
+
 sub _load_env {
-    return Dotenv->parse();
+    my ($self) = @_;
+    return Dotenv->parse($self->config_file);
 }
 
 sub _build_api_url {
